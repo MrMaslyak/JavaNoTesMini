@@ -34,12 +34,19 @@ public class Notes extends JFrame {
         textField.setColumns(70);
         notesPanel.add(textField);
 
+        RoundColorButton buttonOff = new RoundColorButton(new Color(246, 2, 23), new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        buttonOff.setBounds(470, 95, 8, 8);
+        notesPanel.add(buttonOff);
+
         RoundedButton button = new RoundedButton("->");
         button.setBounds(420, 110, 65, 40);
         button.setBackground(new Color(237, 179, 44));
         button.setForeground(Color.white);
         button.setFont(new Font("MV Boli", Font.BOLD, 25));
-        button.setFocusable(false);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,6 +78,20 @@ public class Notes extends JFrame {
                 add(label);
             }
         });
+
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    buttonOff.setBackground(Color.GREEN);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    buttonOff.setBackground(new Color(246, 2, 23));
+                }
+            });
+
+
         notesPanel.add(button);
 
         Button clear = new Button("C");
@@ -169,41 +190,35 @@ public class Notes extends JFrame {
         notesPanel.add(scrollBar);
 
 
-        JButton buttonRed = new JButton("");
-        buttonRed.setBounds(70, 70, 45, 40);
-        buttonRed.setBackground(new Color(255, 0, 0));
-        buttonRed.setForeground(new Color(255, 0, 0));
-        buttonRed.addActionListener(new ActionListener() {
+        RoundColorButton buttonRed = new RoundColorButton(new Color(255, 0, 0), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 label.setForeground(Color.red);
             }
         });
+        buttonRed.setBounds(70, 68, 45, 45);
         notesPanel.add(buttonRed);
 
-        JButton buttonWhite = new JButton("");
-        buttonWhite.setBounds(115, 70, 45, 40);
-        buttonWhite.setBackground(new Color(255, 255, 255));
-        buttonWhite.setForeground(new Color(255, 255, 255));
-        buttonWhite.addActionListener(new ActionListener() {
+
+        RoundColorButton buttonWhite = new RoundColorButton(new Color(255, 255, 255), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                label.setForeground(Color.white);
+                label.setForeground(Color.WHITE);
             }
         });
+        buttonWhite.setBounds(115, 68, 45, 45);
         notesPanel.add(buttonWhite);
 
-        JButton buttonBlue = new JButton("");
-        buttonBlue.setBounds(160, 70, 45, 40);
-        buttonBlue.setBackground(new Color(0, 68, 241));
-        buttonBlue.setForeground(new Color(0, 68, 241));
-        buttonBlue.addActionListener(new ActionListener() {
+        RoundColorButton buttonBlue = new RoundColorButton(new Color(0, 68, 241), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 label.setForeground(Color.BLUE);
             }
         });
+        buttonBlue.setBounds(160, 68, 45, 45);
         notesPanel.add(buttonBlue);
+
+
 
 
 
