@@ -9,9 +9,10 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
     private Label label;
     private JLabel valueScroll;
     private ArrayList<Label> labels = new ArrayList<>();
-    private RoundColorButton buttonOff = new RoundColorButton(new Color(246, 2, 23));
-    private RoundColorButton buttonRed, buttonWhite, buttonBlue;
+    private RoundColorButton buttonRed, buttonWhite, buttonBlue, buttonOff;
     private Button  fontB, fontI,  fontP, clearAll, clear;
+    private RoundedButton button;
+    private  RoundedTextField textField;
 
     Notes() {
         setTitle("Notes");
@@ -30,7 +31,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         notesPanel.setLayout(null);
         add(notesPanel);
 
-        RoundedTextField textField = new RoundedTextField(70);
+        textField = new RoundedTextField(70);
         textField.setBounds(5, 110, 415, 40);
         textField.setColumns(70);
         notesPanel.add(textField);
@@ -39,24 +40,12 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         buttonOff.setBounds(470, 95, 8, 8);
         notesPanel.add(buttonOff);
 
-        RoundedButton button = new RoundedButton("->");
+        button = new RoundedButton("->");
         button.setBounds(420, 110, 65, 40);
         button.setBackground(new Color(237, 179, 44));
         button.setForeground(Color.white);
         button.setFont(new Font("MV Boli", Font.BOLD, 25));
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                label = new Label(textField.getText());
-                label.setFont(new Font("MV Boli", Font.PLAIN, value));
-                label.setBounds(5, 20, 200, value);
-                textField.setText("");
-                labels.add(label);
-                label.addMouseMotionListener(Notes.this);
-                button.addMouseListener((MouseListener) Notes.this);
-                add(label);
-            }
-        });
+        button.addActionListener(this);
         notesPanel.add(button);
 
         clear = new Button("C");
@@ -161,12 +150,19 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
             label.setFont(new Font("MV Boli", Font.PLAIN, value));
         }
         else if (e.getSource() == clearAll) {
-            labels.forEach(label -> {
-                remove(label);
-            });
+            labels.forEach(this::remove);
         }
         else if (e.getSource() == clear){
             remove(label);
+        }else {
+            label = new Label(textField.getText());
+            label.setFont(new Font("MV Boli", Font.PLAIN, value));
+            label.setBounds(5, 20, 200, value);
+            textField.setText("");
+            labels.add(label);
+            label.addMouseMotionListener(Notes.this);
+            button.addMouseListener((MouseListener) Notes.this);
+            add(label);
         }
 
 
