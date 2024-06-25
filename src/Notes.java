@@ -6,13 +6,17 @@ import java.util.ArrayList;
 public class Notes extends JFrame implements MouseMotionListener, MouseListener, ActionListener, AdjustmentListener {
     private int value;
     private JPanel notesPanel;
-    private Label label;
     private JLabel valueScroll;
-    private ArrayList<Label> labels = new ArrayList<>();
+    private ArrayList<JLabel> labels = new ArrayList<>();
     private RoundColorButton buttonRed, buttonWhite, buttonBlue, buttonOff;
-    private Button  fontB, fontI,  fontP, clearAll, clear;
+    private Button fontB, fontI, fontP, clearAll, clear;
     private RoundedButton button;
-    private  RoundedTextField textField;
+    private RoundedTextField textField;
+    private JLabel selectedLabel;
+    private boolean isDragging;
+    private boolean isPanelForDrop;
+    private JPanel panelForDrop;
+
 
     Notes() {
         setTitle("Notes");
@@ -21,6 +25,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ui();
         setLayout(null);
+        addMouseMotionListener(this);
         setVisible(true);
     }
 
@@ -72,7 +77,6 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         fontB.addActionListener(this);
         notesPanel.add(fontB);
 
-
         fontI = new Button("I");
         fontI.setBounds(115, 5, 45, 40);
         fontI.setFont(new Font("MV Boli", Font.BOLD, 25));
@@ -104,23 +108,27 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         scrollBar.setForeground(Color.white);
         scrollBar.addAdjustmentListener(this);
         notesPanel.add(scrollBar);
-
-
         buttonRed = new RoundColorButton(new Color(255, 0, 0));
         buttonRed.setBounds(70, 68, 45, 45);
-        buttonRed.addActionListener((ActionListener) this);
+        buttonRed.addActionListener(this);
         notesPanel.add(buttonRed);
-
 
         buttonWhite = new RoundColorButton(new Color(255, 255, 255));
         buttonWhite.setBounds(115, 68, 45, 45);
-        buttonWhite.addActionListener((ActionListener) this);
+        buttonWhite.addActionListener(this);
         notesPanel.add(buttonWhite);
 
         buttonBlue = new RoundColorButton(new Color(0, 68, 241));
         buttonBlue.setBounds(160, 68, 45, 45);
-        buttonBlue.addActionListener((ActionListener) this);
+        buttonBlue.addActionListener(this);
         notesPanel.add(buttonBlue);
+
+        panelForDrop  = new JPanel();
+        panelForDrop.setBounds(435, 0, 75, 75);
+        panelForDrop.setBackground(new Color(113, 88, 6));
+        panelForDrop.setLayout(null);
+        isPanelForDrop  = true;
+        add(panelForDrop);
 
     }
 
@@ -129,87 +137,108 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         value = e.getValue();
         valueScroll.setText(String.valueOf(value));
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == buttonRed) {
-            label.setForeground(Color.red);
-        }
-        else if (e.getSource() == buttonWhite) {
-            label.setForeground(Color.white);
-        }
-        else if (e.getSource() == buttonBlue) {
-            label.setForeground(Color.blue);
-        }
-        else if (e.getSource() == fontB) {
-            label.setFont(new Font("MV Boli", Font.BOLD, value));
-        }
-        else if (e.getSource() == fontI) {
-            label.setFont(new Font("MV Boli", Font.ITALIC, value));
-        }
-        else if (e.getSource() == fontP) {
-            label.setFont(new Font("MV Boli", Font.PLAIN, value));
-        }
-        else if (e.getSource() == clearAll) {
-            labels.forEach(this::remove);
-        }
-        else if (e.getSource() == clear){
-            remove(label);
-        }else {
-            label = new Label(textField.getText());
-            label.setFont(new Font("MV Boli", Font.PLAIN, value));
-            label.setBounds(5, 20, 200, value);
+            selectedLabel.setForeground(Color.red);
+        } else if (e.getSource() == buttonWhite) {
+            selectedLabel.setForeground(Color.white);
+        } else if (e.getSource() == buttonBlue) {
+            selectedLabel.setForeground(Color.blue);
+        } else if (e.getSource() == fontB) {
+            selectedLabel.setFont(new Font("MV Boli", Font.BOLD, value));
+        } else if (e.getSource() == fontI) {
+            selectedLabel.setFont(new Font("MV Boli", Font.ITALIC, value));
+        } else if (e.getSource() == fontP) {
+            selectedLabel.setFont(new Font("MV Boli", Font.PLAIN, value));
+        } else if (e.getSource() == clearAll) {
+            for (JLabel label : labels) {
+                remove(label);
+            }
+            labels.clear();
+            revalidate();
+            repaint();
+        } else if (e.getSource() == clear) {
+            remove(selectedLabel);
+            labels.remove(selectedLabel);
+            revalidate();
+            repaint();
+        } else if (e.getSource() == button) {
+            JLabel newLabel = new JLabel(textField.getText());
+            newLabel.setFont(new Font("MV Boli", Font.PLAIN, value));
+            newLabel.setBounds(5, 20 + labels.size() * 30, 200, value);
+            newLabel.addMouseListener(this);
+            selectedLabel = newLabel;
             textField.setText("");
-            labels.add(label);
-            label.addMouseMotionListener(Notes.this);
-            button.addMouseListener((MouseListener) Notes.this);
-            add(label);
+            labels.add(newLabel);
+            add(newLabel);
+            revalidate();
+            repaint();
         }
-
-
-
-
-
-
     }
 
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-
-        }
-
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        buttonOff.setBackground(Color.GREEN);
+        if (isDragging){
+            isDragging = false;
+            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.red) && isPanelForDrop) {
+                remove(selectedLabel);
+                labels.remove(selectedLabel);
+                revalidate();
+                repaint();
+            }
+            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.white) && isPanelForDrop) {
+                selectedLabel.setText("Done!");
+                revalidate();
+                repaint();
+            }
+            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.blue) && isPanelForDrop) {
+                selectedLabel.setText("Loading...");
+                revalidate();
+                repaint();
+            }
+            selectedLabel = null;
+        }else {
+            isDragging = true;
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         buttonOff.setBackground(new Color(246, 2, 23));
+        selectedLabel = null;
+
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        selectedLabel =  (JLabel) e.getSource();
+        buttonOff.setBackground(Color.green);
+        repaint();
     }
-
     @Override
     public void mouseExited(MouseEvent e) {
-
+        selectedLabel =  (JLabel) e.getSource();
+        repaint();
     }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        label.setBounds(e.getXOnScreen(), e.getYOnScreen(), 300, 60);
-    }
-
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if (selectedLabel!=null && isDragging){
+            int x = e.getX();
+            int y = e.getY();
+            selectedLabel.setLocation(x-20,y-40);
+            repaint();
+        }
+    }
+    @Override
+    public void mouseDragged(MouseEvent e) {
     }
 
 
 
 }
-
