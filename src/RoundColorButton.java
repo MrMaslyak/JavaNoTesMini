@@ -1,9 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 class RoundColorButton extends JButton {
-    public RoundColorButton(Color color, ActionListener actionListener) {
+    public RoundColorButton(Color color) {
         setBackground(color);
         setForeground(color);
         setFocusPainted(false);
