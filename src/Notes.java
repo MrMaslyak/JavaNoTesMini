@@ -18,6 +18,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
     private JPanel panelForDrop;
 
 
+
     Notes() {
         setTitle("Notes");
         setSize(500, 700);
@@ -123,12 +124,16 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         buttonBlue.addActionListener(this);
         notesPanel.add(buttonBlue);
 
+
+
         panelForDrop  = new JPanel();
-        panelForDrop.setBounds(435, 0, 75, 75);
+        panelForDrop.setBounds(420, 0, 75, 75);
         panelForDrop.setBackground(new Color(113, 88, 6));
         panelForDrop.setLayout(null);
         isPanelForDrop  = true;
         add(panelForDrop);
+
+
 
     }
 
@@ -140,6 +145,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == buttonRed) {
             selectedLabel.setForeground(Color.red);
         } else if (e.getSource() == buttonWhite) {
@@ -167,7 +173,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
         } else if (e.getSource() == button) {
             JLabel newLabel = new JLabel(textField.getText());
             newLabel.setFont(new Font("MV Boli", Font.PLAIN, value));
-            newLabel.setBounds(5, 20 + labels.size() * 30, 200, value);
+            newLabel.setBounds(125, 20 + labels.size() * 30, 200, value);
             newLabel.addMouseListener(this);
             selectedLabel = newLabel;
             textField.setText("");
@@ -184,7 +190,7 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (isDragging){
+        if (isDragging) {
             isDragging = false;
             if (selectedLabel != null && selectedLabel.getForeground().equals(Color.red) && isPanelForDrop) {
                 remove(selectedLabel);
@@ -197,19 +203,24 @@ public class Notes extends JFrame implements MouseMotionListener, MouseListener,
                 revalidate();
                 repaint();
             }
-            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.blue) && isPanelForDrop) {
+            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.blue) && isPanelForDrop ) {
                 selectedLabel.setText("Loading...");
                 revalidate();
                 repaint();
             }
+            if (selectedLabel != null && selectedLabel.getForeground().equals(Color.black) && isPanelForDrop) {
+                dispose();
+               new NotesPage();
+            }
             selectedLabel = null;
-        }else {
+        } else {
             isDragging = true;
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+
         buttonOff.setBackground(new Color(246, 2, 23));
         selectedLabel = null;
 
